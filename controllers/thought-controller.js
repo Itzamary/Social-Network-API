@@ -11,6 +11,10 @@ const thoughtController = {
         .select('-__v')
         .then(dbThoughtData => {
             console.log(dbThoughtData, 'dbthoughtData')
+            if (!dbThoughtData) {
+                res.status(404).json({message: 'No thought found with this id'});
+                return;
+            }
             return res.json(dbThoughtData)
         })
         .catch(err => {
@@ -19,12 +23,12 @@ const thoughtController = {
         });
     },
     getThoughtById({params}, res ) {
-        Thought.findOne({_id: params.id})
+        Thought.findOne({_id: params.thoughtId})
         .populate({
-            path: 'reaction',
+            path: 'reactions',
             select: ('-__v')
         })
-        .select(-__v)
+        .select('-__v')
         .then(dbThoughtData => {
             if (!dbThoughtData) {
                 res.status(404).json({message: 'No thought found with this id'});
@@ -62,7 +66,7 @@ const thoughtController = {
     updateThought({params, body}, res) {
         console.log(params, 'updateThoughtParams');
         console.log(body, 'updatethoughtBody');
-        Thought.findOneAndUpdate({_id: params.id}, body, {new: true})
+        Thought.findOneAndUpdate({_id: params.thoughtId}, body, {new: true})
         .then(updatedThought => {
             console.log(updatedThought, 'updatedThought');
             if(!updatedThought) {
@@ -89,7 +93,7 @@ const thoughtController = {
             );
         })
         .then(dbUserData => {
-            if (!dbuserData) {
+            if (!dbUserData) {
                 res.status(404).json({message: "No user found with this id!"});
                 return;
             }
